@@ -34,8 +34,9 @@ export function AppRoutes() {
               return <FontAwesome size={size} color={color} name="gear" />;
             }
 
-            return;
-            <EvilIcons size={size} color={color} name="gear" />;
+            return (
+              <Ionicons name="ios-settings-outline" size={size} color={color} />
+            );
           },
         }}
       />
