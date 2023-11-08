@@ -16,6 +16,7 @@ export const Input = styled.TextInput`
   background-color: #c2c1c4;
   margin-bottom: 16px;
   padding: 15px;
+  border-radius: 4px;
 `;
 
 export const ButtonContainer = styled.View`

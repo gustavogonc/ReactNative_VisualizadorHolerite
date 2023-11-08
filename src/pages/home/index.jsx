@@ -10,33 +10,51 @@ import {
 } from "./styles";
 import PieChart from "react-native-pie-chart";
 import { AccordionItem } from "../../components/Accordion";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, ActivityIndicator } from "react-native";
 import { RenderReport } from "../../components/Report";
+import { useState } from "react";
 
-import RNHTMLtoPDF from "react-native-html-to-pdf";
+import { WebView } from "react-native-webview";
+
+import api from "../../lib/axios";
 
 export function Home() {
   const widthAndHeight = 250;
   const series = [1000, 200];
   const sliceColor = ["#4aac59", "#b52f20"];
+  const [loading, setLoading] = useState(false);
+  const [pdfBase64, setPdfBase64] = useState(null);
 
-  function handleReport() {
-    RenderReport();
-  }
-
-  const createPDF = async () => {
+  const loadPdf = async () => {
     try {
-      let PDFOptions = {
-        html: "<h1>Generate PDF!</h1>",
-        fileName: "file",
-        directory: Platform.OS === "android" ? "Downloads" : "Documents",
-      };
-      let file = await RNHTMLtoPDF.convert(PDFOptions);
-      if (!file.filePath) return;
-      alert(file.filePath);
+      const response = await fetch("http://20.206.249.21:80/api/Pdf", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const base64data = await response.text();
+      setPdfBase64(base64data);
     } catch (error) {
-      console.log("Failed to generate pdf", error.message);
+      console.error(error);
     }
+  };
+
+  const renderPdf = () => {
+    return (
+      <WebView
+        originWhitelist={["*"]}
+        source={{ uri: `data:application/pdf;base64,${pdfBase64}` }}
+        onError={(syntheticEvent) => {
+          const { nativeEvent } = syntheticEvent;
+          console.warn("WebView error: ", nativeEvent);
+        }}
+        style={{ flex: 1, height: 700 }}
+        startInLoadingState={true}
+        renderLoading={() => <ActivityIndicator size="large" color="#0000ff" />}
+      />
+    );
   };
 
   return (
@@ -55,16 +73,23 @@ export function Home() {
         />
       </DashContainer>
       <ResumeContainer>
-        <AccordionItem title="Proventos" value={2315} type={"Proventos"}>
-          <DetailView>
-            <Text>Salário base</Text>
-            <Text>R$2.300,00</Text>
-          </DetailView>
-          <DetailView>
-            <Text>Adicional</Text>
-            <Text>R$15,00</Text>
-          </DetailView>
-        </AccordionItem>
+        <View
+          style={{
+            borderBottomColor: "#e1e2e1",
+            borderBottomWidth: 1,
+          }}
+        >
+          <AccordionItem title="Proventos" value={2315} type={"Proventos"}>
+            <DetailView>
+              <Text>Salário base</Text>
+              <Text>R$2.300,00</Text>
+            </DetailView>
+            <DetailView>
+              <Text>Adicional</Text>
+              <Text>R$15,00</Text>
+            </DetailView>
+          </AccordionItem>
+        </View>
         <AccordionItem title="Descontos" value={15} type={"Descontos"}>
           <DetailView>
             <Text>Desconto</Text>
@@ -73,9 +98,10 @@ export function Home() {
         </AccordionItem>
       </ResumeContainer>
 
-      <FileButton onPress={createPDF}>
+      <FileButton onPress={loadPdf}>
         <ButtonText>VISUALIZAR PDF</ButtonText>
       </FileButton>
+      {pdfBase64 ? renderPdf() : null}
     </Container>
   );
 }

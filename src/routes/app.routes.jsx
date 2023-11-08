@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Home } from "../pages/home";
+import { ConfigCenter } from "../pages/pagemenu";
 
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -25,8 +26,8 @@ export function AppRoutes() {
         }}
       />
       <Tab.Screen
-        name="ConfigCenter"
-        component={Home}
+        name="Configurações"
+        component={ConfigCenter}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, size, color }) => {
