@@ -10,14 +10,17 @@ export const OptionView = styled.FlatList``;
 
 export const HeaderView = styled.View`
   background-color: #fafafa;
-  height: 80px;
+  height: 95px;
   border-radius: 8px;
   align-items: center;
   justify-content: center;
   margin-bottom: 16px;
 `;
 
-export const HeaderText = styled.Text``;
+export const HeaderText = styled.Text`
+  margin-bottom: 12px;
+  font-weight: bold;
+`;
 
 export const DashContainer = styled.View`
   background-color: #fafafa;

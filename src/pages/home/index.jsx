@@ -1,4 +1,5 @@
-import { ActivityIndicator, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Text, View } from "react-native";
 import {
   Container,
   HeaderView,
@@ -7,22 +8,21 @@ import {
   DetailView,
   CenteredTextContainer,
   TextPieChart,
+  HeaderText,
 } from "./styles";
 import PieChart from "react-native-pie-chart";
 import { AccordionItem } from "../../components/Accordion";
 
 import { HomeSkeleton } from "../../components/HomeSkeleton";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { api } from "../../lib/axios";
 
 import SelectDropdown from "react-native-select-dropdown";
-import { useEffect, useState } from "react";
+import { FontAwesome } from "@expo/vector-icons";
+
 import { useAuth } from "../../contexts/auth";
 
 export function Home() {
-  const [mesesPagamento, setMesesPagamento] = useState([]);
   const [mesesList, setMesesList] = useState([]);
   const [dadosMes, setDadosMes] = useState([]);
   const [isListReady, setIsListReady] = useState(false);
@@ -68,8 +68,6 @@ export function Home() {
       try {
         const response = await api.get(`App/${id}`);
         if (response.status == 200) {
-          setMesesPagamento(response.data);
-
           const newList = response.data.map((item) => ({
             label: `${item.mes}/${item.ano}`,
             value: `${item.mes}-${item.ano}`,
@@ -90,7 +88,9 @@ export function Home() {
       }
     }
 
-    fetchData();
+    if (id != "") {
+      fetchData();
+    }
   }, [id]);
 
   useEffect(() => {
@@ -114,13 +114,16 @@ export function Home() {
         <View>
           <HeaderView>
             {isListReady && !loading && (
-              <View>
-                <Text>Selecione um mês</Text>
+              <>
+                <HeaderText>Selecione um mês</HeaderText>
                 <SelectDropdown
                   buttonStyle={{
-                    backgroundColor: "#f4f4f4",
+                    backgroundColor: "#f9f9f9",
                     color: "white",
-                    width: "80%",
+                    width: "90%",
+                    borderColor: "lightgray",
+                    borderWidth: 1,
+                    borderRadius: 4,
                   }}
                   rowStyle={{ backgroundColor: "lightgray" }}
                   data={mesesList}
@@ -128,8 +131,12 @@ export function Home() {
                   defaultValue={valorPadraoDropDown}
                   buttonTextAfterSelection={(item, index) => item.label}
                   rowTextForSelection={(item, index) => item.label}
+                  renderDropdownIcon={() => (
+                    <FontAwesome name="chevron-down" size={16} color="gray" />
+                  )}
+                  dropdownIconPosition="right"
                 />
-              </View>
+              </>
             )}
           </HeaderView>
           <DashContainer>

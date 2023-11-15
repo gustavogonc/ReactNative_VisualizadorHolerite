@@ -11,15 +11,19 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [id, setId] = useState("");
   const [message, setMessage] = useState("");
+  const [nome, setNome] = useState("");
 
   useEffect(() => {
     async function loadStoragedData() {
       const storagedUser = await AsyncStorage.getItem("@Auth:user");
       const storagedId = await AsyncStorage.getItem("@Auth:id");
+      const storagedName = await AsyncStorage.getItem("@Auth:name");
 
       if (storagedUser && storagedId) {
+        console.log(storagedId + " " + storagedUser);
         setUser(JSON.parse(storagedUser));
         setId(JSON.parse(storagedId));
+        setNome(JSON.parse(storagedName));
         setLoading(false);
       }
 
@@ -40,6 +44,7 @@ export function AuthProvider({ children }) {
     console.log(response.data);
     setUser(response?.data[0]?.email_usuario);
     setId(response?.data[0]?.id_funcionario);
+    setNome(response?.data[0]?.nome_funcionario);
 
     await AsyncStorage.setItem(
       "@Auth:user",
@@ -50,6 +55,11 @@ export function AuthProvider({ children }) {
       "@Auth:id",
       JSON.stringify(response?.data[0]?.id_funcionario)
     );
+
+    await AsyncStorage.setItem(
+      "@Auth:name",
+      JSON.stringify(response?.data[0]?.nome_funcionario)
+    );
     return response;
   }
 
@@ -57,6 +67,7 @@ export function AuthProvider({ children }) {
     AsyncStorage.clear().then(() => {
       setUser("");
       setId("");
+      setNome("");
     });
   }
 
@@ -72,6 +83,7 @@ export function AuthProvider({ children }) {
         id,
         message,
         setMessage,
+        nome,
       }}
     >
       {children}

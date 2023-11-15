@@ -10,9 +10,31 @@ import {
 } from "./styles";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../../contexts/auth";
+import { useEffect, useState } from "react";
 
 export function ConfigCenter() {
-  const { setUser, signOut } = useAuth();
+  const { setUser, signOut, nome } = useAuth();
+  const [primeiraLetra, setPrimeiraLetra] = useState("");
+  const [ultimaLetra, setUltimaLetra] = useState("");
+
+  function Iniciais(name) {
+    const info = name.split(" ");
+
+    const primeiroNome = info[0].split("");
+    const primeiraLetraNome = primeiroNome[0];
+
+    const ultimaPosicao = info.length - 1;
+    const ultimoNome = info[ultimaPosicao];
+
+    const primeiraLetraUltimoNome = ultimoNome[0];
+
+    setPrimeiraLetra(primeiraLetraNome.toUpperCase());
+    setUltimaLetra(primeiraLetraUltimoNome.toUpperCase());
+  }
+
+  useEffect(() => {
+    Iniciais(nome);
+  }, [nome]);
 
   function handleLogout() {
     signOut();
@@ -26,11 +48,11 @@ export function ConfigCenter() {
               borderRadius: 100,
             }}
           >
-            <Text>GG</Text>
+            <Text>{primeiraLetra + ultimaLetra}</Text>
           </ViewName>
 
           <ViewInfosName>
-            <Text>Gustavo Antonio Gonçalves</Text>
+            <Text>{nome}</Text>
           </ViewInfosName>
         </View>
 
