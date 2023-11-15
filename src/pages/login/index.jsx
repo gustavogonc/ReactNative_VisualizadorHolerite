@@ -9,21 +9,33 @@ import {
 } from "./styles";
 
 import { useAuth } from "../../contexts/auth";
-import { Ionicons } from "@expo/vector-icons";
+import { MessageComponent } from "../../components/MessageComponent";
 
 import logo from "../../assets/logo.png";
 
-import { ActivityIndicator, StyleSheet } from "react-native";
-import { Shadow } from "react-native-shadow-2";
+import { ActivityIndicator, StyleSheet, Text } from "react-native";
 import { useState } from "react";
 
 export function Login() {
-  const { user, setUser, signIn, loading } = useAuth();
+  const { user, setUser, signIn, loading, message, setMessage } = useAuth();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-  function handleLogin() {
-    signIn(email, senha);
+  async function handleLogin() {
+    setMessage("");
+    if (senha == "" || email == "") {
+      setMessage("Os campos são obrigatórios!");
+      return;
+    }
+    try {
+      const response = await signIn(email, senha);
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        setMessage("Usuário ou senha inválidos");
+      } else {
+        setMessage("Erro no login: " + error.message);
+      }
+    }
   }
 
   return (
@@ -50,6 +62,9 @@ export function Login() {
               <ButtonText>ENTRAR</ButtonText>
             </Button>
           </ButtonContainer>
+          {message != "" && (
+            <MessageComponent message={message} type={"error"} />
+          )}
         </>
       )}
     </Container>
