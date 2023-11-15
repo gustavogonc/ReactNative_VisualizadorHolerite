@@ -11,9 +11,15 @@ import {
 import PieChart from "react-native-pie-chart";
 import { AccordionItem } from "../../components/Accordion";
 
+import { api } from "../../lib/axios";
+
 import SelectDropdown from "react-native-select-dropdown";
+import { useEffect, useState } from "react";
 
 export function Home() {
+  const [mesesPagamento, setMesesPagamento] = useState([]);
+  const [mesesList, setMesesList] = useState([]);
+  const [valorPadraoDropDown, setValorPadraoDropDown] = useState(null);
   const widthAndHeight = 250;
   const series = [2315, 350];
   const sliceColor = ["#4aac59", "#b52f20"];
@@ -28,23 +34,59 @@ export function Home() {
     console.log("Selecionado:", item, index);
   };
 
+  const ConvertObject = () => {
+    const newList = mesesPagamento.map((item) => ({
+      label: `${item.mes}/${item.ano}`,
+      value: `${item.mes}-${item.ano}`,
+    }));
+    setMesesList(newList);
+
+    if (newList.length > 0) {
+      setValorPadraoDropDown(newList[newList.length - 1]);
+    }
+  };
+
+  async function BuscaMeses() {
+    try {
+      const response = await api.get("App/1");
+
+      if (response.status == 200) {
+        setMesesPagamento(response.data);
+      }
+    } catch (error) {
+      console.log("erro ao chamar api" + error);
+    }
+  }
+
+  useEffect(() => {
+    async function valor() {
+      await BuscaMeses();
+
+      ConvertObject();
+    }
+
+    valor();
+  }, []);
+
   return (
     <Container showsVerticalScrollIndicator={false}>
       <HeaderView>
         <Text>Selecione um mês</Text>
-        <SelectDropdown
-          buttonStyle={{
-            backgroundColor: "#f4f4f4",
-            color: "white",
-            width: "80%",
-          }}
-          rowStyle={{ backgroundColor: "lightgray" }}
-          data={countries}
-          onSelect={handleSelect}
-          defaultValue={countries[0]}
-          buttonTextAfterSelection={(item, index) => item.label}
-          rowTextForSelection={(item, index) => item.label}
-        />
+        {valorPadraoDropDown && (
+          <SelectDropdown
+            buttonStyle={{
+              backgroundColor: "#f4f4f4",
+              color: "white",
+              width: "80%",
+            }}
+            rowStyle={{ backgroundColor: "lightgray" }}
+            data={mesesList}
+            onSelect={handleSelect}
+            defaultValue={valorPadraoDropDown}
+            buttonTextAfterSelection={(item, index) => item.label}
+            rowTextForSelection={(item, index) => item.label}
+          />
+        )}
       </HeaderView>
       <DashContainer>
         <PieChart
