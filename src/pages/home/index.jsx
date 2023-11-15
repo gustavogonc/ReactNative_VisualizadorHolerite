@@ -1,67 +1,50 @@
-import { Text, View, Platform } from "react-native";
+import { Text, View } from "react-native";
 import {
   Container,
   HeaderView,
   DashContainer,
   ResumeContainer,
   DetailView,
-  FileButton,
-  ButtonText,
+  CenteredTextContainer,
+  TextPieChart,
 } from "./styles";
 import PieChart from "react-native-pie-chart";
 import { AccordionItem } from "../../components/Accordion";
-import { TouchableOpacity, ActivityIndicator } from "react-native";
-import { RenderReport } from "../../components/Report";
-import { useState } from "react";
 
-import { WebView } from "react-native-webview";
-
-import api from "../../lib/axios";
+import SelectDropdown from "react-native-select-dropdown";
 
 export function Home() {
   const widthAndHeight = 250;
-  const series = [1000, 200];
+  const series = [2315, 350];
   const sliceColor = ["#4aac59", "#b52f20"];
-  const [loading, setLoading] = useState(false);
-  const [pdfBase64, setPdfBase64] = useState(null);
 
-  const loadPdf = async () => {
-    try {
-      const response = await fetch("http://20.206.249.21:80/api/Pdf", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+  const countries = [
+    { label: "01/2023", value: "01-2023" },
+    { label: "02/2023", value: "02-2023" },
+    { label: "03/2023", value: "03-2023" },
+  ];
 
-      const base64data = await response.text();
-      setPdfBase64(base64data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const renderPdf = () => {
-    return (
-      <WebView
-        originWhitelist={["*"]}
-        source={{ uri: `data:application/pdf;base64,${pdfBase64}` }}
-        onError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          console.warn("WebView error: ", nativeEvent);
-        }}
-        style={{ flex: 1, height: 700 }}
-        startInLoadingState={true}
-        renderLoading={() => <ActivityIndicator size="large" color="#0000ff" />}
-      />
-    );
+  const handleSelect = (item, index) => {
+    console.log("Selecionado:", item, index);
   };
 
   return (
     <Container showsVerticalScrollIndicator={false}>
       <HeaderView>
         <Text>Selecione um mês</Text>
-        <Text>setembro/2023</Text>
+        <SelectDropdown
+          buttonStyle={{
+            backgroundColor: "#f4f4f4",
+            color: "white",
+            width: "80%",
+          }}
+          rowStyle={{ backgroundColor: "lightgray" }}
+          data={countries}
+          onSelect={handleSelect}
+          defaultValue={countries[0]}
+          buttonTextAfterSelection={(item, index) => item.label}
+          rowTextForSelection={(item, index) => item.label}
+        />
       </HeaderView>
       <DashContainer>
         <PieChart
@@ -71,6 +54,10 @@ export function Home() {
           coverRadius={0.75}
           coverFill={"#FFF"}
         />
+        <CenteredTextContainer>
+          <Text>A receber em</Text>
+          <TextPieChart>14/11/2023</TextPieChart>
+        </CenteredTextContainer>
       </DashContainer>
       <ResumeContainer>
         <View
@@ -90,18 +77,13 @@ export function Home() {
             </DetailView>
           </AccordionItem>
         </View>
-        <AccordionItem title="Descontos" value={15} type={"Descontos"}>
+        <AccordionItem title="Descontos" value={350} type={"Descontos"}>
           <DetailView>
             <Text>Desconto</Text>
-            <Text>R$15,00</Text>
+            <Text>R$350,00</Text>
           </DetailView>
         </AccordionItem>
       </ResumeContainer>
-
-      <FileButton onPress={loadPdf}>
-        <ButtonText>VISUALIZAR PDF</ButtonText>
-      </FileButton>
-      {pdfBase64 ? renderPdf() : null}
     </Container>
   );
 }

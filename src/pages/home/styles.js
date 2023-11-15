@@ -44,18 +44,19 @@ export const DetailView = styled.View`
   border-color: #c1c2c1;
 `;
 
-export const FileButton = styled.TouchableOpacity`
-  width: 100%;
-  align-items: center;
+export const CenteredTextContainer = styled.View`
+  position: absolute;
   justify-content: center;
-  background-color: #188754;
-  height: 50px;
-  margin-bottom: 48px;
-  border-radius: 8px;
+  align-items: center;
 `;
 
-export const ButtonText = styled.Text`
-  font-weight: bold;
-  color: #fafafa;
+export const TextPieChart = styled.Text`
+  margin: 12px;
+  padding: 8px;
   font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  justify-content: center;
+  border: 3px solid #4aac59;
+  border-radius: 6px;
 `;
