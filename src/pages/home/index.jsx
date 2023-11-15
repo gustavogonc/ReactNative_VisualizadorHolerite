@@ -13,10 +13,13 @@ import { AccordionItem } from "../../components/Accordion";
 
 import { HomeSkeleton } from "../../components/HomeSkeleton";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { api } from "../../lib/axios";
 
 import SelectDropdown from "react-native-select-dropdown";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../contexts/auth";
 
 export function Home() {
   const [mesesPagamento, setMesesPagamento] = useState([]);
@@ -28,6 +31,8 @@ export function Home() {
   const widthAndHeight = 250;
   const series = [dadosMes.mes?.total_proventos, dadosMes.mes?.total_descontos];
   const sliceColor = ["#4aac59", "#b52f20"];
+
+  const { id } = useAuth();
 
   const FormatarMoeda = (value) => {
     let options = { style: "currency", currency: "BRL" };
@@ -42,7 +47,7 @@ export function Home() {
 
   async function ConsultaDadosMes(mes, ano) {
     var info = {
-      id_funcionario: 1,
+      id_funcionario: id,
       mes: mes,
       ano: ano,
     };
@@ -50,7 +55,6 @@ export function Home() {
       const response = await api.post("App/valoresMes", info);
 
       if (response.status == 200) {
-        console.log("chamou a api e deu 200" + JSON.stringify(response.data));
         const data = response.data[0];
         setDadosMes(data);
       }
@@ -62,7 +66,7 @@ export function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await api.get("App/1");
+        const response = await api.get(`App/${id}`);
         if (response.status == 200) {
           setMesesPagamento(response.data);
 
@@ -87,7 +91,7 @@ export function Home() {
     }
 
     fetchData();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (isListReady) {

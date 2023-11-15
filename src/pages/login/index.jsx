@@ -13,29 +13,45 @@ import { Ionicons } from "@expo/vector-icons";
 
 import logo from "../../assets/logo.png";
 
-import { StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import { Shadow } from "react-native-shadow-2";
+import { useState } from "react";
 
 export function Login() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, signIn, loading } = useAuth();
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
 
   function handleLogin() {
-    setUser("teste");
+    signIn(email, senha);
   }
+
   return (
     <Container>
       <Logo source={logo} />
 
-      <Input placeholder="E-mail" />
-      <Input placeholder="Senha" secureTextEntry={true}></Input>
-
-      <StatusBar style="auto" />
-
-      <ButtonContainer>
-        <Button onPress={handleLogin}>
-          <ButtonText>ENTRAR</ButtonText>
-        </Button>
-      </ButtonContainer>
+      {loading && <ActivityIndicator size={35} color={"#fff"} />}
+      {!loading && (
+        <>
+          <Input
+            placeholder="E-mail"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+          />
+          <Input
+            placeholder="Senha"
+            value={senha}
+            onChangeText={(text) => setSenha(text)}
+            secureTextEntry={true}
+          ></Input>
+          <StatusBar style="auto" />
+          <ButtonContainer>
+            <Button onPress={handleLogin}>
+              <ButtonText>ENTRAR</ButtonText>
+            </Button>
+          </ButtonContainer>
+        </>
+      )}
     </Container>
   );
 }

@@ -12,10 +12,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../../contexts/auth";
 
 export function ConfigCenter() {
-  const { setUser } = useAuth();
+  const { setUser, signOut } = useAuth();
 
   function handleLogout() {
-    setUser("");
+    signOut();
   }
   return (
     <Container>
