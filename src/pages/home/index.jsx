@@ -11,9 +11,9 @@ import {
 import PieChart from "react-native-pie-chart";
 import { AccordionItem } from "../../components/Accordion";
 
-import { api } from "../../lib/axios";
+import { HomeSkeleton } from "../../components/HomeSkeleton";
 
-import RNPickerSelect from "react-native-picker-select";
+import { api } from "../../lib/axios";
 
 import SelectDropdown from "react-native-select-dropdown";
 import { useEffect, useState } from "react";
@@ -21,16 +21,43 @@ import { useEffect, useState } from "react";
 export function Home() {
   const [mesesPagamento, setMesesPagamento] = useState([]);
   const [mesesList, setMesesList] = useState([]);
+  const [dadosMes, setDadosMes] = useState([]);
   const [isListReady, setIsListReady] = useState(false);
   const [valorPadraoDropDown, setValorPadraoDropDown] = useState(null);
   const [loading, setLoading] = useState(true);
   const widthAndHeight = 250;
-  const series = [2315, 350];
+  const series = [dadosMes.mes?.total_proventos, dadosMes.mes?.total_descontos];
   const sliceColor = ["#4aac59", "#b52f20"];
+
+  const FormatarMoeda = (value) => {
+    let options = { style: "currency", currency: "BRL" };
+    return value.toLocaleString("pt-BR", options);
+  };
 
   const handleSelect = (item, index) => {
     console.log("Selecionado:", item, index);
+    const [mes, ano] = item.value.split("-");
+    ConsultaDadosMes(mes, ano);
   };
+
+  async function ConsultaDadosMes(mes, ano) {
+    var info = {
+      id_funcionario: 1,
+      mes: mes,
+      ano: ano,
+    };
+    try {
+      const response = await api.post("App/valoresMes", info);
+
+      if (response.status == 200) {
+        console.log("chamou a api e deu 200" + JSON.stringify(response.data));
+        const data = response.data[0];
+        setDadosMes(data);
+      }
+    } catch (error) {
+      console.log("erro ao chamar api " + error);
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -47,6 +74,8 @@ export function Home() {
 
           if (newList.length > 0) {
             setValorPadraoDropDown(newList[0]);
+            const [mes, ano] = newList[0].value.split("-");
+            ConsultaDadosMes(mes, ano);
           }
           setIsListReady(true);
         }
@@ -66,9 +95,17 @@ export function Home() {
     }
   }, [isListReady]);
 
+  const verificaData = (date) => {
+    if (date > Date.now()) {
+      return "A receber em";
+    } else {
+      return "Recebeu em";
+    }
+  };
+
   return (
     <Container showsVerticalScrollIndicator={false}>
-      {loading && <ActivityIndicator />}
+      {loading && <HomeSkeleton />}
       {!loading && (
         <View>
           <HeaderView>
@@ -100,8 +137,8 @@ export function Home() {
               coverFill={"#FFF"}
             />
             <CenteredTextContainer>
-              <Text>A receber em</Text>
-              <TextPieChart>14/11/2023</TextPieChart>
+              <Text>{verificaData(dadosMes.mes?.data_pagamento)}</Text>
+              <TextPieChart>{dadosMes.mes?.data_pagamento}</TextPieChart>
             </CenteredTextContainer>
           </DashContainer>
           <ResumeContainer>
@@ -111,22 +148,34 @@ export function Home() {
                 borderBottomWidth: 1,
               }}
             >
-              <AccordionItem title="Proventos" value={2315} type={"Proventos"}>
-                <DetailView>
-                  <Text>Salário base</Text>
-                  <Text>R$2.300,00</Text>
-                </DetailView>
-                <DetailView>
-                  <Text>Adicional</Text>
-                  <Text>R$15,00</Text>
-                </DetailView>
+              <AccordionItem
+                title="Proventos"
+                value={dadosMes.mes?.total_proventos}
+                type={"Proventos"}
+              >
+                {dadosMes.detalhes
+                  ?.filter((d) => d.tipo_valor === "Provento")
+                  .map((detalhe, index) => (
+                    <DetailView key={index}>
+                      <Text>{detalhe.nome_valor}</Text>
+                      <Text>{FormatarMoeda(detalhe.valor)}</Text>
+                    </DetailView>
+                  ))}
               </AccordionItem>
             </View>
-            <AccordionItem title="Descontos" value={350} type={"Descontos"}>
-              <DetailView>
-                <Text>Desconto</Text>
-                <Text>R$350,00</Text>
-              </DetailView>
+            <AccordionItem
+              title="Descontos"
+              value={dadosMes.mes?.total_descontos}
+              type={"Descontos"}
+            >
+              {dadosMes.detalhes
+                ?.filter((d) => d.tipo_valor === "Desconto")
+                .map((detalhe, index) => (
+                  <DetailView key={index}>
+                    <Text>{detalhe.nome_valor}</Text>
+                    <Text>{FormatarMoeda(detalhe.valor)}</Text>
+                  </DetailView>
+                ))}
             </AccordionItem>
           </ResumeContainer>
         </View>
