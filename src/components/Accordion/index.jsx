@@ -20,13 +20,14 @@ export function AccordionItem({ title, children, value, type }) {
     <Container>
       <Title>
         <MainTitle onPress={toggleItem}>
-          <Entypo name="plus" size={24} color="black" />
+          <Entypo name="plus" size={24} color={children ? "black" : "white"} />
           <FontAwesome
             name="square"
             size={24}
             color={type == "Proventos" ? "#4aac59" : "#b52f20"}
             style={{ marginRight: 4 }}
           />
+
           <Text>{title}</Text>
         </MainTitle>
 

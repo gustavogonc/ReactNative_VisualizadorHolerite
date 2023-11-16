@@ -185,20 +185,32 @@ export function Home() {
                   ))}
               </AccordionItem>
             </View>
-            <AccordionItem
-              title="Descontos"
-              value={dadosMes.mes?.total_descontos}
-              type={"Descontos"}
+            <View
+              style={{
+                borderBottomColor: "#e1e2e1",
+                borderBottomWidth: 1,
+              }}
             >
-              {dadosMes.detalhes
-                ?.filter((d) => d.tipo_valor === "Desconto")
-                .map((detalhe, index) => (
-                  <DetailView key={index}>
-                    <Text>{detalhe.nome_valor}</Text>
-                    <Text>{FormatarMoeda(detalhe.valor)}</Text>
-                  </DetailView>
-                ))}
-            </AccordionItem>
+              <AccordionItem
+                title="Descontos"
+                value={dadosMes.mes?.total_descontos}
+                type={"Descontos"}
+              >
+                {dadosMes.detalhes
+                  ?.filter((d) => d.tipo_valor === "Desconto")
+                  .map((detalhe, index) => (
+                    <DetailView key={index}>
+                      <Text>{detalhe.nome_valor}</Text>
+                      <Text>{FormatarMoeda(detalhe.valor)}</Text>
+                    </DetailView>
+                  ))}
+              </AccordionItem>
+            </View>
+            <AccordionItem
+              title="Líquido"
+              value={dadosMes.mes?.valor_liquido}
+              type={"Proventos"}
+            ></AccordionItem>
           </ResumeContainer>
         </View>
       )}
