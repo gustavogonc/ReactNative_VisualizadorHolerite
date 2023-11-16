@@ -41,8 +41,7 @@ export function Home() {
     return value.toLocaleString("pt-BR", options);
   };
 
-  const handleSelect = (item, index) => {
-    console.log("Selecionado:", item, index);
+  const handleSelect = (item) => {
     const [mes, ano] = item.value.split("-");
     ConsultaDadosMes(mes, ano);
   };
@@ -102,11 +101,20 @@ export function Home() {
   }, [isListReady]);
 
   const verificaData = (data) => {
-    const date = new Date().toLocaleDateString();
+    if (data == undefined) {
+      return;
+    }
+    const [dia, mes, ano] = data.split("/");
+    const dataEntrada = new Date(ano, mes - 1, dia);
 
-    console.log("valor de data é: " + data);
-    console.log("valor de date é: " + date);
-    if (data >= date) {
+    const hoje = new Date();
+    const dataAtual = new Date(
+      hoje.getFullYear(),
+      hoje.getMonth(),
+      hoje.getDate()
+    );
+
+    if (dataEntrada >= dataAtual) {
       return "A receber em";
     } else {
       return "Recebeu em";
