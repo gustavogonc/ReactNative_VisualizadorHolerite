@@ -22,6 +22,8 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import { useAuth } from "../../contexts/auth";
 
+import { NoData } from "../../components/NoData";
+
 export function Home() {
   const [mesesList, setMesesList] = useState([]);
   const [dadosMes, setDadosMes] = useState([]);
@@ -99,18 +101,27 @@ export function Home() {
     }
   }, [isListReady]);
 
-  const verificaData = (date) => {
-    if (date > Date.now()) {
+  const verificaData = (data) => {
+    const date = new Date().toLocaleDateString();
+
+    console.log("valor de data é: " + data);
+    console.log("valor de date é: " + date);
+    if (data >= date) {
       return "A receber em";
     } else {
       return "Recebeu em";
     }
   };
 
+  if (!loading && mesesList.length == 0) {
+    return <NoData />;
+  }
+
   return (
     <Container showsVerticalScrollIndicator={false}>
       {loading && <HomeSkeleton />}
-      {!loading && (
+
+      {!loading && mesesList.length > 0 && (
         <View>
           <HeaderView>
             {isListReady && !loading && (

@@ -1,5 +1,5 @@
 import { Feather } from "@expo/vector-icons";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, Modal } from "react-native";
 import {
   Container,
   MainView,
@@ -12,10 +12,13 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../../contexts/auth";
 import { useEffect, useState } from "react";
 
+import { AlterarSenha } from "../../components/ModalAlterarSenha";
+
 export function ConfigCenter() {
-  const { setUser, signOut, nome } = useAuth();
+  const { signOut, nome } = useAuth();
   const [primeiraLetra, setPrimeiraLetra] = useState("");
   const [ultimaLetra, setUltimaLetra] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   function Iniciais(name) {
     const info = name.split(" ");
@@ -61,9 +64,17 @@ export function ConfigCenter() {
             style={{
               marginBottom: 12,
             }}
+            onPress={() => setModalVisible(true)}
           >
             <MaterialIcons name="lock-outline" size={24} color="black" />
             <Text style={{ marginLeft: 4 }}>Alterar senha</Text>
+            <Modal
+              visible={modalVisible}
+              animationType="fade"
+              transparent={true}
+            >
+              <AlterarSenha handleClose={() => setModalVisible(false)} />
+            </Modal>
           </StyledButton>
           <StyledButton
             style={{

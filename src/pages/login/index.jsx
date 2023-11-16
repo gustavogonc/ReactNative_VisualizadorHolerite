@@ -13,15 +13,22 @@ import { MessageComponent } from "../../components/MessageComponent";
 
 import logo from "../../assets/logo.png";
 
-import { ActivityIndicator, StyleSheet, Text } from "react-native";
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  ActivityIndicatorBase,
+} from "react-native";
 import { useState } from "react";
 
 export function Login() {
   const { user, setUser, signIn, loading, message, setMessage } = useAuth();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [loadingSignin, setLoadingSignin] = useState(false);
 
   async function handleLogin() {
+    setLoadingSignin(true);
     setMessage("");
     if (senha == "" || email == "") {
       setMessage("Os campos são obrigatórios!");
@@ -35,6 +42,8 @@ export function Login() {
       } else {
         setMessage("Erro no login: " + error.message);
       }
+    } finally {
+      setLoadingSignin(false);
     }
   }
 
@@ -59,7 +68,8 @@ export function Login() {
           <StatusBar style="auto" />
           <ButtonContainer>
             <Button onPress={handleLogin}>
-              <ButtonText>ENTRAR</ButtonText>
+              {loadingSignin && <ActivityIndicator color={"#fff"} />}
+              {!loadingSignin && <ButtonText>ENTRAR</ButtonText>}
             </Button>
           </ButtonContainer>
           {message != "" && (
