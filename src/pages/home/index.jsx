@@ -31,7 +31,7 @@ export function Home() {
   const [valorPadraoDropDown, setValorPadraoDropDown] = useState(null);
   const [loading, setLoading] = useState(true);
   const widthAndHeight = 250;
-  const series = [dadosMes.mes?.total_proventos, dadosMes.mes?.total_descontos];
+  const series = [dadosMes.mes?.valor_liquido, dadosMes.mes?.total_descontos];
   const sliceColor = ["#4aac59", "#b52f20"];
 
   const { id } = useAuth();
